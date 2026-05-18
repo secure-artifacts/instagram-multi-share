@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "IG通话共享助手",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Instagram 网页通话多窗口共享辅助工具",
   "permissions": ["tabs", "activeTab", "scripting", "windows", "system.display"],
   "host_permissions": [
