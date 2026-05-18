@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate Icons</title></head>
+<body>
+<p>Open this file in Chrome, right-click each canvas and "Save image as" to icons/ folder.</p>
+<canvas id="c16" width="16" height="16"></canvas> icon16.png<br>
+<canvas id="c48" width="48" height="48"></canvas> icon48.png<br>
+<canvas id="c128" width="128" height="128"></canvas> icon128.png<br>
+<script>
+function drawIcon(canvas) {
+  const s = canvas.width;
+  const ctx = canvas.getContext('2d');
+  // Background circle
+  ctx.fillStyle = '#0084ff';
+  ctx.beginPath();
+  ctx.arc(s/2, s/2, s/2, 0, Math.PI * 2);
+  ctx.fill();
+  // Screen icon
+  const m = s * 0.2;
+  const w = s * 0.55;
+  const h = s * 0.38;
+  ctx.fillStyle = '#fff';
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = Math.max(1, s * 0.04);
+  ctx.beginPath();
+  ctx.roundRect(m, m, w, h, s * 0.04);
+  ctx.stroke();
+  // Screen inner
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillRect(m + s*0.04, m + s*0.04, w - s*0.08, h - s*0.08);
+  // Arrow
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  const ax = s * 0.65, ay = s * 0.5;
+  ctx.moveTo(ax, ay - s*0.12);
+  ctx.lineTo(ax + s*0.15, ay + s*0.05);
+  ctx.lineTo(ax + s*0.07, ay + s*0.05);
+  ctx.lineTo(ax + s*0.07, ay + s*0.18);
+  ctx.lineTo(ax - s*0.07, ay + s*0.18);
+  ctx.lineTo(ax - s*0.07, ay + s*0.05);
+  ctx.lineTo(ax - s*0.15, ay + s*0.05);
+  ctx.closePath();
+  ctx.fill();
+}
+drawIcon(document.getElementById('c16'));
+drawIcon(document.getElementById('c48'));
+drawIcon(document.getElementById('c128'));
+</script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --bg: #0d1628;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-soft: rgba(255, 255, 255, 0.76);
+      --ink: #162033;
+      --muted: #667085;
+      --line: rgba(22, 32, 51, 0.1);
+      --blue: #0b84ff;
+      --blue-2: #075de8;
+      --green: #18a861;
+      --red: #eb3b3b;
+      --amber: #f59e0b;
+      --shadow: 0 18px 48px rgba(10, 20, 40, 0.28);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 340px;
+      min-height: 500px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(76, 201, 240, 0.45), transparent 30%),
+        radial-gradient(circle at 100% 0%, rgba(24, 168, 97, 0.32), transparent 30%),
+        linear-gradient(160deg, #101c31 0%, #0a1220 58%, #111827 100%);
+      font-family: "Microsoft YaHei UI", "Aptos", "Segoe UI", sans-serif;
+      font-size: 10.5px;
+      overflow-x: hidden;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .shell {
+      position: relative;
+      padding: 10px;
+    }
+
+    .shell::before {
+      position: absolute;
+      inset: 10px 18px auto auto;
+      width: 118px;
+      height: 118px;
+      content: "";
+      background: linear-gradient(135deg, rgba(255,255,255,0.28), rgba(255,255,255,0));
+      border-radius: 999px;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 10px 12px 8px;
+      color: #fff;
+    }
+
+    .brand-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .logo {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 11px;
+      background: rgba(255,255,255,0.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+      font-size: 13.5px;
+    }
+
+    h1 {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin-top: 3px;
+      color: rgba(255,255,255,0.72);
+      font-size: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .version {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 999px;
+      color: rgba(255,255,255,0.86);
+      background: rgba(255,255,255,0.12);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .status-card {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+      backdrop-filter: blur(14px);
+    }
+
+    .metric {
+      min-width: 0;
+    }
+
+    .metric-label {
+      color: rgba(255,255,255,0.62);
+      font-size: 9px;
+    }
+
+    .metric-value {
+      margin-top: 3px;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .status-pill {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #c7f9df;
+      background: rgba(24, 168, 97, 0.18);
+      font-weight: 900;
+    }
+
+    .status-pill.sharing {
+      color: #dbeafe;
+      background: rgba(11, 132, 255, 0.24);
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-inner {
+      padding: 12px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: rise 180ms ease-out;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 10.5px;
+      color: #344054;
+      font-weight: 900;
+    }
+
+    .last-refresh {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-height: 30px;
+      padding: 0 10px;
+      border: 1px solid rgba(11, 132, 255, 0.16);
+      border-radius: 999px;
+      color: var(--blue-2);
+      background: #eef6ff;
+      font-size: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, opacity 120ms ease;
+    }
+
+    .link-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      background: #e1f0ff;
+    }
+
+    .link-btn:disabled,
+    .big-btn:disabled,
+    .tool-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      transform: none;
+    }
+
+    .tab-list {
+      display: grid;
+      gap: 8px;
+      max-height: 330px;
+      padding-right: 2px;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    .tab-list::-webkit-scrollbar,
+    .diag-panel::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .tab-list::-webkit-scrollbar-thumb,
+    .diag-panel::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(102, 112, 133, 0.28);
+    }
+
+    .tab-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fbff;
+      transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+    }
+
+    .tab-item:hover {
+      transform: translateY(-1px);
+      border-color: rgba(11, 132, 255, 0.3);
+    }
+
+    .tab-item.selected {
+      border-color: rgba(11, 132, 255, 0.45);
+      background: linear-gradient(135deg, #f5fbff, #eef7ff);
+    }
+
+    .tab-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--blue);
+    }
+
+    .name {
+      min-width: 0;
+      color: #182230;
+      font-size: 10.5px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge {
+      padding: 4px 7px;
+      border-radius: 999px;
+      color: var(--blue-2);
+      background: #e7f3ff;
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .empty {
+      display: none;
+      padding: 26px 16px;
+      border: 1px dashed rgba(102,112,133,0.28);
+      border-radius: 16px;
+      color: var(--muted);
+      background: #f8fafc;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .empty-icon {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .hint {
+      margin-top: 9px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      color: #475467;
+      background: #f6f8fb;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .big-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 44px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 15px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(11, 132, 255, 0.26);
+      transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+    }
+
+    .big-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 16px 28px rgba(11, 132, 255, 0.32);
+    }
+
+    .btn-go {
+      background: linear-gradient(135deg, var(--blue), var(--blue-2));
+    }
+
+    .btn-stop {
+      background: linear-gradient(135deg, #ff5a52, #d92d20);
+      box-shadow: 0 12px 22px rgba(235, 59, 59, 0.22);
+    }
+
+    .sharing-view {
+      padding: 18px 14px 14px;
+      text-align: center;
+    }
+
+    .sharing-icon {
+      position: relative;
+      display: grid;
+      width: 68px;
+      height: 68px;
+      place-items: center;
+      margin: 4px auto 13px;
+      border-radius: 24px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), #35c2ff);
+      font-size: 24px;
+      box-shadow: 0 18px 30px rgba(11, 132, 255, 0.25);
+    }
+
+    .sharing-icon::after {
+      position: absolute;
+      inset: -7px;
+      content: "";
+      border: 2px solid rgba(11, 132, 255, 0.22);
+      border-radius: 28px;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.96); opacity: 0.45; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+
+    .sharing-text {
+      font-size: 13.5px;
+      font-weight: 950;
+    }
+
+    .sharing-sub {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .tool-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 950;
+      cursor: pointer;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+
+    .tool-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    .btn-cam-on {
+      background: linear-gradient(135deg, #22c55e, #159957);
+    }
+
+    .btn-cam-off {
+      background: linear-gradient(135deg, #ff5a52, #d92d20);
+    }
+
+    .btn-diag {
+      color: #075de8;
+      background: #eef6ff;
+    }
+
+    .btn-log {
+      color: #344054;
+      background: #f2f4f7;
+    }
+
+    .diag-panel {
+      display: none;
+      max-height: 210px;
+      margin-top: 10px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fafc;
+      font-size: 9px;
+      line-height: 1.55;
+      overflow-y: auto;
+    }
+
+    .diag-panel.active {
+      display: block;
+    }
+
+    .diag-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(102,112,133,0.08);
+    }
+
+    .diag-line:last-child {
+      border-bottom: 0;
+    }
+
+    .diag-title {
+      margin: 8px 0 3px;
+      color: #344054;
+      font-weight: 950;
+    }
+
+    .diag-muted { color: var(--muted); }
+    .diag-ok { color: #16833a; font-weight: 900; }
+    .diag-warn { color: #b26a00; font-weight: 900; }
+    .diag-bad { color: #c92828; font-weight: 900; }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 14px;
+      z-index: 10;
+      max-width: 300px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: #fff;
+      background: rgba(17, 24, 39, 0.92);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+      font-size: 10px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div class="brand-line">
+        <div class="brand">
+          <div class="logo">▣</div>
+          <div>
+            <h1>IG通话共享助手</h1>
+            <div class="subtitle">Instagram 网页通话共享控制台</div>
+          </div>
+        </div>
+        <div class="version" id="versionBadge">v-</div>
+      </div>
+
+      <div class="status-card">
+        <div class="metric">
+          <div class="metric-label">检测到</div>
+          <div class="metric-value" id="detectedCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">已选择</div>
+          <div class="metric-value" id="selectedCount">0</div>
+        </div>
+        <div class="status-pill" id="statusPill">● 待命中</div>
+      </div>
+    </header>
+
+    <main class="card">
+      <div class="card-inner">
+        <div class="view active" id="viewIdle">
+          <div class="section-head">
+            <div>
+              <div class="section-title">检测到的通话</div>
+              <div class="last-refresh" id="lastRefresh">准备刷新</div>
+            </div>
+            <button class="link-btn" id="btnRefresh" type="button">刷新</button>
+          </div>
+
+          <ul class="tab-list" id="tabList"></ul>
+          <div class="empty" id="emptyState">
+            <span class="empty-icon">⌕</span>
+            暂未检测到通话窗口<br>
+            请先打开 Instagram 网页通话
+          </div>
+
+          <div class="hint" id="hint">
+            第一次共享会让你选择要共享的窗口；之后会把同一个画面同步到已勾选的通话窗口。
+          </div>
+          <button class="big-btn btn-go" id="btnStart" type="button" disabled>开始共享</button>
+        </div>
+
+        <div class="view" id="viewSharing">
+          <div class="sharing-view">
+            <div class="sharing-icon">▸</div>
+            <div class="sharing-text">正在共享中</div>
+            <div class="sharing-sub" id="sharingInfo"></div>
+            <button class="big-btn btn-stop" id="btnStop" type="button">停止所有共享</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <section class="card">
+      <div class="card-inner">
+        <div class="section-head">
+          <div>
+            <div class="section-title">摄像头批量控制</div>
+            <div class="last-refresh">仅作用于当前浏览器用户可见的通话窗口</div>
+          </div>
+        </div>
+        <div class="tools-grid">
+          <button class="tool-btn btn-cam-on" id="btnCamOn" type="button">全部开启</button>
+          <button class="tool-btn btn-cam-off" id="btnCamOff" type="button">全部关闭</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <div class="section-head">
+          <div>
+            <div class="section-title">诊断与日志</div>
+            <div class="last-refresh">快速定位黑屏、未响应、脚本注入状态</div>
+          </div>
+        </div>
+        <div class="tools-grid">
+          <button class="tool-btn btn-diag" id="btnDiag" type="button">一键诊断</button>
+          <button class="tool-btn btn-log" id="btnExportLog" type="button">导出日志</button>
+        </div>
+        <div class="diag-panel" id="diagPanel"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
